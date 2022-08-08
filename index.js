@@ -14,6 +14,10 @@ mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport');
+
 
 
 app.use(express.static('public'));
@@ -26,23 +30,25 @@ app.get('/', (req, res) => {
 
 // Add new user
 app.post('/users', (req, res) => {
-  Users.findOne({ name: req.body.name })
+  Users.findOne({ Username: req.body.Username })
     .then((user) => {
+      console.log(user)
       if (user) {
-        return res.status(400).send(req.body.name + 'already exists');
+        return res.status(400).send(req.body.Username + ' already exists');
       } else {
-        Users
-          .create({
-            name: req.body.name,
-            password: req.body.password,
-            email: req.body.email,
-            birthday: req.body.birthday
-          })
-          .then((user) =>{res.status(201).json(user) })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
+        Users.create({
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
         })
+          .then((user) => {
+            res.status(201).json(user);
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          });
       }
     })
     .catch((error) => {
@@ -52,8 +58,8 @@ app.post('/users', (req, res) => {
 });
 
 // Add a movie to a user's list of favorites
-app.post('/users/:name/movies/:MovieID', (req, res) => {
-  Users.findOneAndUpdate({ name: req.params.name }, {
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
      $push: { favoriteMovies: req.params.MovieID }
    },
    { new: true }, // This line makes sure that the updated document is returned
@@ -68,8 +74,8 @@ app.post('/users/:name/movies/:MovieID', (req, res) => {
 });
 
 // Remove a movie to a user's list of favorites
-app.delete('/users/:name/movies/:MovieID', (req, res) => {
-  Users.findOneAndUpdate({ name: req.params.name }, {
+app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ name: req.params.Username }, {
      $pull: { favoriteMovies: req.params.MovieID }
    },
    { new: true }, // This line makes sure that the updated document is returned
@@ -97,7 +103,7 @@ app.get('/users', (req, res) => {
 
 // Get a user by username
 app.get('/users/:Username', (req, res) => {
-  Users.findOne({ name: req.params.name })
+  Users.findOne({ Username: req.params.Username })
     .then((user) => {
       res.json(user);
     })
@@ -108,13 +114,13 @@ app.get('/users/:Username', (req, res) => {
 });
 
 //Update user information
-app.put('/users/:name', (req, res) => {
-  Users.findOneAndUpdate({ name: req.params.name }, { $set:
+app.put('/users/:Username', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
     {
-      name: req.body.name,
-      password: req.body.password,
-      email: req.body.email,
-      birthday: req.body.birthday
+      Username: req.body.name,
+      Password: req.body.password,
+      Email: req.body.email,
+      Birthday: req.body.birthday
     }
   },
   { new: true }, // This line makes sure that the updated document is returned
@@ -129,7 +135,7 @@ app.put('/users/:name', (req, res) => {
 });
 
 //Get all movies
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false}), (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -177,8 +183,8 @@ app.get("/movies/directors/:name", (req, res) => {
 });
 
 // Delete a user by username
-app.delete('/users/:name', (req, res) => {
-  Users.findOneAndRemove({ name: req.params.name })
+app.delete('/users/:Username', (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.name })
     .then((user) => {
       if (!user) {
         res.status(400).send(req.params.name + ' was not found');
