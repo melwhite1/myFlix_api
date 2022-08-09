@@ -144,14 +144,28 @@ app.get('/users/:Username', passport.authenticate('jwt', {session: false}), (req
 });
 
 //Update user information
-app.put('/users/:Username', passport.authenticate('jwt', {session: false}), (req, res) => {
-  Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
-    {
-      Username: req.body.name,
-      Password: req.body.password,
-      Email: req.body.email,
-      Birthday: req.body.birthday
+app.put(
+  '/users/:Username',
+  [check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail(),
+  ],
+  passport.authenticate('jwt', {session: false}), (req, res) => {
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
+
+    let hashPassword = users.hashPassword(req.body.Password);
+    Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+    {
+      Username: req.body.Username,
+      Password: hashedPassword,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday
+    },
   },
   { new: true }, // This line makes sure that the updated document is returned
   (err, updatedUser) => {
@@ -233,3 +247,5 @@ const port = process.env.PORT || 8080;
 app.listen(port, '0.0.0.0',() => {
  console.log('Listening on Port ' + port);
 });
+
+mongosh "mongodb+srv://myflixdb.ddi86kf.mongodb.net/myFlixDB" --apiVersion 1 --username melissawhite668
