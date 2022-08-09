@@ -1,0 +1,4 @@
+{"_id":{"$oid":"62e94f861313799175eb09d7"},"id":1,"Username":"Melissa","Birthday":{"$date":"1994-12-02T00:00:00Z"},"Password":"movies123","Email":"melissa@email.com","favoriteMovies":[{"$oid":"62e940071313799175eb09cc"},{"$oid":"62e947861313799175eb09cd"}]}
+{"_id":{"$oid":"62e950d21313799175eb09d8"},"id":2,"Username":"Parker","Birthday":{"$date":"1993-10-01T00:00:00Z"},"Password":"moviesallday","Email":"parker@email.com","favoriteMovies":[]}
+{"_id":{"$oid":"62e951291313799175eb09d9"},"id":3,"Username":"Mary","Birthday":{"$date":{"$numberLong":"-31536000000"}},"Password":"movietime","Email":"mary@email.com","favoriteMovies":[{"$oid":"62e940071313799175eb09cc"},{"$oid":"62e94e1f1313799175eb09d6"}]}
+{"_id":{"$oid":"62e951f61313799175eb09da"},"id":4,"Username":"Sarah","Birthday":{"$date":"1996-09-14T00:00:00Z"},"Password":"moviez4life","Email":"sarah@email.com","favoriteMovies":[{"$oid":"62e940071313799175eb09cc"}]}
