@@ -146,7 +146,7 @@ app.get('/users/:Username', passport.authenticate('jwt', {session: false}), (req
 //Update user information
 app.put(
   '/users/:Username',
-  [check('Username', 'Username is required').isLength({min: 5}),
+  [ check('Username', 'Username is required').isLength({min: 5}),
   check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
   check('Password', 'Password is required').not().isEmpty(),
   check('Email', 'Email does not appear to be valid').isEmail(),
@@ -158,14 +158,14 @@ app.put(
       return res.status(422).json({ errors: errors.array() });
     }
 
-    let hashPassword = users.hashPassword(req.body.Password);
+    let hashPassword = Users.hashPassword(req.body.Password);
     Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
     {
       Username: req.body.Username,
       Password: hashedPassword,
       Email: req.body.Email,
       Birthday: req.body.Birthday
-    },
+    }
   },
   { new: true }, // This line makes sure that the updated document is returned
   (err, updatedUser) => {
