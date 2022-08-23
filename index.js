@@ -10,9 +10,9 @@ const { check, validationResult } = require('express-validator');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-//mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
-mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -174,7 +174,7 @@ app.put('/users/:Username',
 
 
 //Get all movies
-app.get('/movies', function (req, res) => {
+app.get('/movies', (req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
