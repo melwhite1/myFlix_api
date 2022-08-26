@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const uuid = require('uuid');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const { check, validationResult } = require('express-validator');
@@ -24,10 +25,8 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
-
-
-app.use(express.static('public'));
 app.use(morgan('common'));
+app.use(express.static('public'));
 
 // GET requests
 app.get('/', (req, res) => {
@@ -174,12 +173,12 @@ app.put('/users/:Username',
 
 
 //Get all movies
-app.get('/movies', function (req, res) {
+app.get('/movies', passport.authenticate('jwt', { session: false }) (req, res) => {
   Movies.find()
-    .then(function (movies) {
+    .then((movies) => {
       res.status(201).json(movies);
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.error(err);
       res.status(500).send("Error: " + err);
     });
