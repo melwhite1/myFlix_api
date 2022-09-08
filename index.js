@@ -6,6 +6,9 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 const { check, validationResult } = require('express-validator');
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const Movies = Models.Movie;
 const Users = Models.User;
